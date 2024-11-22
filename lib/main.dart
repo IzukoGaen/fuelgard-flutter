@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fuel_gardv/Screens/homescreen.dart'; // Asegúrate de que la ruta sea correcta
+import 'package:fuel_gardv/Screens/login.dart'; // Asegúrate de que la ruta sea correcta
 import 'package:fuel_gardv/pantalladatos.dart';
 import 'package:fuel_gardv/pantallalertas.dart';
 import 'package:fuel_gardv/confgeovalla.dart';
 import 'package:fuel_gardv/pantallatiemporeal.dart';
+import 'package:fuel_gardv/Screens/homescreen.dart'; // Asegúrate de que la ruta sea correcta
 
 void main() {
   runApp(const MyApp());
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
               color: Colors.black), // Actualiza bodyText2 a bodyMedium
         ),
       ),
-      home: HomeScreen(), // Usa HomeScreen como la pantalla principal
+      home: LoginScreen(), // Usa LoginScreen como la pantalla principal
     );
   }
 }
