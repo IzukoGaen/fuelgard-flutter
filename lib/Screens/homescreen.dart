@@ -3,6 +3,7 @@ import 'package:fuel_gardv/pantalladatos.dart';
 import 'package:fuel_gardv/pantallalertas.dart';
 import 'package:fuel_gardv/confgeovalla.dart';
 import 'package:fuel_gardv/pantallatiemporeal.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -12,6 +13,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+
+  final List<Map<String, dynamic>> _trucks = [
+    {'name': 'Camión 1', 'fuelLevel': 0.75},
+    {'name': 'Camión 2', 'fuelLevel': 0.50},
+    {'name': 'Camión 3', 'fuelLevel': 0.25},
+  ];
 
   final List<String> _titles = [
     'Gráfico de Datos del Sensor Ultrasónico',
@@ -37,41 +44,32 @@ class _HomeScreenState extends State<HomeScreen> {
                 stops: [0.0, 0.5, 1.0],
               ),
             ),
-            child: PageView(
+            child: PageView.builder(
               controller: _pageController,
               onPageChanged: (int page) {
                 setState(() {
                   _currentPage = page;
                 });
               },
-              children: [
-                _buildPage(
+              itemCount: _trucks.length,
+              itemBuilder: (context, index) {
+                return _buildTruckIndicator(
                   context,
-                  _buildFuelLevelChart(),
-                ),
-                _buildPage(
-                  context,
-                  _buildFuelLevelIndicator(),
-                ),
-                _buildPage(
-                  context,
-                  _buildMap(),
-                ),
-                _buildPage(
-                  context,
-                  _buildAlertIndicators(),
-                ),
-              ],
+                  _trucks[index]['name'],
+                  _trucks[index]['fuelLevel'],
+                );
+              },
             ),
           ),
           Positioned(
-            top: MediaQuery.of(context).size.height * 0.15, // Posiciona el título a mediados de la pantalla
+            top: MediaQuery.of(context).size.height *
+                0.15, // Posiciona el título a mediados de la pantalla
             left: 16.0,
             right: 16.0,
             child: AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
               child: Text(
-                _titles[_currentPage],
+                _trucks[_currentPage]['name'],
                 key: ValueKey<int>(_currentPage),
                 textAlign: TextAlign.left,
                 style: TextStyle(
@@ -91,6 +89,24 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           _buildBottomSheet(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTruckIndicator(
+      BuildContext context, String name, double fuelLevel) {
+    return Center(
+      child: CircularPercentIndicator(
+        radius: 100.0,
+        lineWidth: 10.0,
+        percent: fuelLevel,
+        center: Text(
+          '${(fuelLevel * 100).toStringAsFixed(1)}%',
+          style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+        ),
+        progressColor: Colors.blue,
+        backgroundColor: Colors.grey,
+        circularStrokeCap: CircularStrokeCap.round,
       ),
     );
   }
@@ -170,7 +186,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => PantallaTiempoReal()),
+                    MaterialPageRoute(
+                        builder: (context) => PantallaTiempoReal()),
                   );
                 },
               ),
