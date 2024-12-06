@@ -10,7 +10,7 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
   final _loginFormKey = GlobalKey<FormState>();
   final _registerFormKey = GlobalKey<FormState>();
   final TextEditingController _loginEmailController = TextEditingController();
@@ -21,11 +21,27 @@ class _LoginScreenState extends State<LoginScreen> {
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   bool _isLoggedIn = false;
+  late AnimationController _controller;
+  late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
     _checkLoginStatus();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat(reverse: true);
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   Future<void> _checkLoginStatus() async {
@@ -161,19 +177,35 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Inicio de Sesión y Registro'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _isLoggedIn ? _buildLogoutForm() : _buildAuthForms(),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.purple, Colors.deepPurple],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: _isLoggedIn ? _buildLogoutForm() : _buildAuthForms(),
+        ),
       ),
     );
   }
 
   Widget _buildAuthForms() {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        ScaleTransition(
+          scale: _animation,
+          child: Icon(
+            Icons.lock,
+            size: 100,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: 40),
         _buildLoginForm(),
         SizedBox(height: 40),
         _buildRegisterForm(),
@@ -186,10 +218,20 @@ class _LoginScreenState extends State<LoginScreen> {
       key: _loginFormKey,
       child: Column(
         children: <Widget>[
-          Text('Inicio de Sesión', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          Text('Inicio de Sesión', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
           TextFormField(
             controller: _loginEmailController,
-            decoration: InputDecoration(labelText: 'Email'),
+            decoration: InputDecoration(
+              labelText: 'Email',
+              labelStyle: TextStyle(color: Colors.white),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+            ),
+            style: TextStyle(color: Colors.white),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Por favor ingrese un correo electrónico';
@@ -197,9 +239,20 @@ class _LoginScreenState extends State<LoginScreen> {
               return null;
             },
           ),
+          SizedBox(height: 20),
           TextFormField(
             controller: _loginPasswordController,
-            decoration: InputDecoration(labelText: 'Password'),
+            decoration: InputDecoration(
+              labelText: 'Password',
+              labelStyle: TextStyle(color: Colors.white),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+            ),
+            style: TextStyle(color: Colors.white),
             obscureText: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -211,6 +264,9 @@ class _LoginScreenState extends State<LoginScreen> {
           SizedBox(height: 20),
           ElevatedButton(
             onPressed: _loginUser,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.deepPurple, // Color del botón
+            ),
             child: Text('Iniciar Sesión'),
           ),
         ],
@@ -223,10 +279,20 @@ class _LoginScreenState extends State<LoginScreen> {
       key: _registerFormKey,
       child: Column(
         children: <Widget>[
-          Text('Registro', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          Text('Registro', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
           TextFormField(
             controller: _registerUsernameController,
-            decoration: InputDecoration(labelText: 'Username'),
+            decoration: InputDecoration(
+              labelText: 'Username',
+              labelStyle: TextStyle(color: Colors.white),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+            ),
+            style: TextStyle(color: Colors.white),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Por favor ingrese un nombre de usuario';
@@ -234,9 +300,20 @@ class _LoginScreenState extends State<LoginScreen> {
               return null;
             },
           ),
+          SizedBox(height: 20),
           TextFormField(
             controller: _registerEmailController,
-            decoration: InputDecoration(labelText: 'Email'),
+            decoration: InputDecoration(
+              labelText: 'Email',
+              labelStyle: TextStyle(color: Colors.white),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+            ),
+            style: TextStyle(color: Colors.white),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Por favor ingrese un correo electrónico';
@@ -244,9 +321,20 @@ class _LoginScreenState extends State<LoginScreen> {
               return null;
             },
           ),
+          SizedBox(height: 20),
           TextFormField(
             controller: _registerPasswordController,
-            decoration: InputDecoration(labelText: 'Password'),
+            decoration: InputDecoration(
+              labelText: 'Password',
+              labelStyle: TextStyle(color: Colors.white),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+            ),
+            style: TextStyle(color: Colors.white),
             obscureText: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -258,6 +346,9 @@ class _LoginScreenState extends State<LoginScreen> {
           SizedBox(height: 20),
           ElevatedButton(
             onPressed: _registerUser,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.deepPurple, // Color del botón
+            ),
             child: Text('Registrar'),
           ),
         ],
@@ -269,10 +360,13 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text('Bienvenido, has iniciado sesión.'),
+        Text('Bienvenido, has iniciado sesión.', style: TextStyle(color: Colors.white)),
         SizedBox(height: 20),
         ElevatedButton(
           onPressed: _logoutUser,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.deepPurple, // Color del botón
+          ),
           child: Text('Cerrar Sesión'),
         ),
       ],

@@ -11,6 +11,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  final List<String> _titles = [
+    'Gráfico de Datos del Sensor Ultrasónico',
+    'Nivel de Combustible en Tiempo Real',
+    'Ubicación Actual del Camión en un Mapa Integrado',
+    'Indicadores Visuales para Alertas Activas',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -20,30 +28,66 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Stack(
         children: [
-          PageView(
-            controller: _pageController,
-            children: [
-              _buildPage(
-                context,
-                'Gráfico de Datos del Sensor Ultrasónico',
-                _buildFuelLevelChart(),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.deepPurple, Colors.purple, Colors.white],
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                stops: [0.0, 0.5, 1.0],
               ),
-              _buildPage(
-                context,
-                'Nivel de Combustible en Tiempo Real',
-                _buildFuelLevelIndicator(),
+            ),
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (int page) {
+                setState(() {
+                  _currentPage = page;
+                });
+              },
+              children: [
+                _buildPage(
+                  context,
+                  _buildFuelLevelChart(),
+                ),
+                _buildPage(
+                  context,
+                  _buildFuelLevelIndicator(),
+                ),
+                _buildPage(
+                  context,
+                  _buildMap(),
+                ),
+                _buildPage(
+                  context,
+                  _buildAlertIndicators(),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: MediaQuery.of(context).size.height * 0.15, // Posiciona el título a mediados de la pantalla
+            left: 16.0,
+            right: 16.0,
+            child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              child: Text(
+                _titles[_currentPage],
+                key: ValueKey<int>(_currentPage),
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 32, // Tamaño de letra grande
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(2.0, 2.0),
+                      blurRadius: 3.0,
+                      color: Colors.black.withOpacity(0.5),
+                    ),
+                  ],
+                ),
               ),
-              _buildPage(
-                context,
-                'Ubicación Actual del Camión en un Mapa Integrado',
-                _buildMap(),
-              ),
-              _buildPage(
-                context,
-                'Indicadores Visuales para Alertas Activas',
-                _buildAlertIndicators(),
-              ),
-            ],
+            ),
           ),
           _buildBottomSheet(),
         ],
@@ -51,16 +95,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPage(BuildContext context, String title, Widget content) {
+  Widget _buildPage(BuildContext context, Widget content) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            title,
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-        ),
         Expanded(child: content),
       ],
     );
